@@ -1,4 +1,4 @@
-@"
+
 # ================================================
 # Vault Server Configuration
 # Member 3 - Vault & Secrets | DevOps Project
@@ -25,4 +25,3 @@ telemetry {
   prometheus_retention_time = "30s"
   disable_hostname          = true
 }
-"@ | Out-File -FilePath vault\config\vault.hcl -Encoding utf8

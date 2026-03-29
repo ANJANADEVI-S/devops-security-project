@@ -1,4 +1,3 @@
-@"
 # Policy: admin
 # Who uses it: project admins only
 
@@ -21,4 +20,3 @@ path "sys/leases/*" {
 path "database/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
-"@ | Out-File -FilePath vault\policies\admin.hcl -Encoding utf8

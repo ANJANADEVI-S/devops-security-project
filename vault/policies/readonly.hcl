@@ -1,4 +1,3 @@
-@"
 # Policy: readonly
 # Who uses it: M4 monitoring / Prometheus exporter
 
@@ -17,4 +16,3 @@ path "sys/metrics" {
 path "auth/token/lookup-self" {
   capabilities = ["read"]
 }
-"@ | Out-File -FilePath vault\policies\readonly.hcl -Encoding utf8
