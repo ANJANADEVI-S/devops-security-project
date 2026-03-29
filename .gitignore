@@ -1,0 +1,5 @@
+﻿vault/data/*
+vault/logs/*
+*.json
+.env
+*.token
