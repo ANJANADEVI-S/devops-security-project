@@ -1,8 +1,8 @@
-﻿# ================================================
+
 # VAULT HANDOVER DOCUMENT
 # Member 3 - Vault and Secrets
 # DevOps Security Project
-# ================================================
+
 
 ## Vault Server Details
 URL:     http://127.0.0.1:8200
