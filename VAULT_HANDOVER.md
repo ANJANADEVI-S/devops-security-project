@@ -1,91 +1,116 @@
-﻿# Vault Handover Document
+﻿# ================================================
+# VAULT HANDOVER DOCUMENT
 # Member 3 - Vault and Secrets
 # DevOps Security Project
+# ================================================
 
 ## Vault Server Details
-URL: http://127.0.0.1:8200
+URL:     http://127.0.0.1:8200
 Version: v1.21.4
-Storage: Raft (persistent)
-UI: http://127.0.0.1:8200/ui
+UI:      http://127.0.0.1:8200/ui
 
-## For M2 (Backend)
-Your Role: backend-service
-Your Policy: backend-app
-Token TTL: 1 hour (auto renew via AppRole)
+## For M2 (Backend) - Read Carefully
 
-Step 1 - Get your Role ID:
-vault read auth/approle/role/backend-service/role-id
+### Step 1 - Your Vault Credentials
+Vault URL:  http://127.0.0.1:8200
+Role ID:    a1497870-3244-1df9-748a-419ccb8b9500
+Secret ID:  Ask M3 to generate one when you are ready to start coding
+            (Secret ID expires every 24 hours so get a fresh one each time)
 
-Step 2 - Get your Secret ID:
-vault write -f auth/approle/role/backend-service/secret-id
+### Step 2 - How to Login to Vault
+Run this in your terminal:
+vault write auth/approle/login \
+  role_id=a1497870-3244-1df9-748a-419ccb8b9500 \
+  secret_id=YOUR_SECRET_ID
 
-Step 3 - Login:
-vault write auth/approle/login role_id=YOUR_ROLE_ID secret_id=YOUR_SECRET_ID
+This gives you back a token. Use that token for all Vault requests.
 
-Step 4 - Use the token returned to read secrets:
+### Step 3 - Your Secret Paths
+These are the only paths your token can access:
 
-Secret Paths you can access:
-- secret/app/backend/database  (DB credentials)
-- secret/app/backend/jwt       (JWT signing key)
-- secret/app/backend/api-keys  (external API keys)
+secret/app/backend/database  - DB host, port, username, password
+secret/app/backend/jwt       - JWT signing key, expiry, algorithm
+secret/app/backend/api-keys  - Stripe key, SendGrid key
 
-API call example:
+### Step 4 - How to Read a Secret
+Using Vault CLI:
+vault kv get secret/app/backend/database
+
+Using HTTP API (in your code):
 GET http://127.0.0.1:8200/v1/secret/data/app/backend/database
 Header: X-Vault-Token: YOUR_TOKEN
 
-When token expires (403 error):
-- Catch the 403 in your code
-- Login again via AppRole to get fresh token
-- Retry the request
+### Step 5 - Code Example (Node.js)
+const vault = require('node-vault')({
+  apiVersion: 'v1',
+  endpoint: 'http://127.0.0.1:8200'
+});
 
-## For M4 (Monitoring)
-Your Role: monitoring-service
-Your Policy: readonly
-Token TTL: 1 hour
+await vault.approleLogin({
+  role_id: 'a1497870-3244-1df9-748a-419ccb8b9500',
+  secret_id: 'YOUR_SECRET_ID'
+});
 
-Step 1 - Get your Role ID:
-vault read auth/approle/role/monitoring-service/role-id
+const secret = await vault.read('secret/data/app/backend/database');
+console.log(secret.data.data.password);
 
-Step 2 - Get your Secret ID:
-vault write -f auth/approle/role/monitoring-service/secret-id
+### Step 6 - Code Example (Python)
+import hvac
 
-Step 3 - Login:
-vault write auth/approle/login role_id=YOUR_ROLE_ID secret_id=YOUR_SECRET_ID
+client = hvac.Client(url='http://127.0.0.1:8200')
+client.auth.approle.login(
+  role_id='a1497870-3244-1df9-748a-419ccb8b9500',
+  secret_id='YOUR_SECRET_ID'
+)
 
-Vault Metrics URL for Prometheus:
-http://127.0.0.1:8200/v1/sys/metrics?format=prometheus
+secret = client.secrets.kv.read_secret_version(
+  path='app/backend/database'
+)
+print(secret['data']['data']['password'])
 
-Vault Health URL:
-http://127.0.0.1:8200/v1/sys/health
+### Step 7 - When Your Token Expires (403 Error)
+If you get a 403 error:
+1. Ask M3 for a fresh Secret ID
+2. Login again via AppRole
+3. Retry your request
 
-Audit Log Location:
-C:\Users\ANJANA\devops-security-project\vault\logs\audit.log
+### Important Notes for M2
+- Never hardcode Secret ID in your code
+- Store Secret ID as environment variable
+- Token lasts 1 hour then auto expires
+- You can only access paths under secret/app/backend/
+- You cannot access secret/app/frontend/ or secret/app/monitoring/
 
 ## For M5 (DevOps)
-Docker image: hashicorp/vault:latest
+Docker image:  hashicorp/vault:latest
 
 Required volume mounts:
-- vault/data:/vault/data        (persistent storage)
-- vault/config:/vault/config    (config file)
-- vault/logs:/vault/logs        (audit logs for M4)
+  vault/data:/vault/data
+  vault/config:/vault/config
+  vault/logs:/vault/logs
 
-Environment variables needed:
-- VAULT_ADDR=http://vault:8200
-
-After container restart:
-Vault starts sealed - unseal with 3 keys from vault-init.json:
-vault operator unseal KEY1
-vault operator unseal KEY2
-vault operator unseal KEY3
+Environment variables:
+  VAULT_ADDR=http://vault:8200
 
 Ports to expose:
-- 8200 (API and UI)
-- 8201 (cluster communication)
+  8200 - API and UI
+  8201 - cluster communication
 
-## Important Notes
+After container restart unseal with 3 keys from vault-init.json:
+  vault operator unseal KEY1
+  vault operator unseal KEY2
+  vault operator unseal KEY3
+
+## For M4 (Monitoring)
+Prometheus metrics: http://127.0.0.1:8200/v1/sys/metrics?format=prometheus
+Vault health:       http://127.0.0.1:8200/v1/sys/health
+Audit log:          vault/logs/audit.log
+Role ID:            Ask M3 to generate when ready
+
+## Important Security Rules
 1. Never commit vault-init.json to GitHub
 2. Never share root token with anyone
-3. Give M2 only their Role ID (not Secret ID)
-4. Secret ID is generated fresh each deployment
-5. All secrets auto expire based on TTL
-6. Audit logs record every access
+3. Role ID is safe to share in group chat
+4. Secret ID must be shared privately only
+5. All access auto expires based on TTL
+6. Audit logs record every single access
