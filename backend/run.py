@@ -6,8 +6,11 @@ Usage:  python run.py
 import os
 from dotenv import load_dotenv
 
-# Load .env file before anything else
-load_dotenv()
+# Load .env file using explicit path (relative to this script)
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(dotenv_path=env_path, override=True)
+print(f"[ENV] Loaded from: {env_path}")
+print(f"[ENV] VAULT_MOCK_MODE = {os.getenv('VAULT_MOCK_MODE', 'NOT SET')}")
 
 from src.app import create_app
 from src.seed import seed
