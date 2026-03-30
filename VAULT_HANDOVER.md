@@ -1,18 +1,18 @@
-﻿# ================================================
+# ================================================
 # VAULT HANDOVER DOCUMENT
 # Member 3 - Vault and Secrets
 # DevOps Security Project
 # ================================================
 
 ## Vault Server Details
-URL:     http://127.0.0.1:8200
+URL:     http://10.10.166.53:8200
 Version: v1.21.4
-UI:      http://127.0.0.1:8200/ui
+UI:      http://10.10.166.53:8200/ui
 
 ## For M2 (Backend) - Read Carefully
 
 ### Step 1 - Your Vault Credentials
-Vault URL:  http://127.0.0.1:8200
+Vault URL:  http://10.10.166.53:8200
 Role ID:    a1497870-3244-1df9-748a-419ccb8b9500
 Secret ID:  Ask M3 to generate one when you are ready to start coding
             (Secret ID expires every 24 hours so get a fresh one each time)
@@ -37,13 +37,13 @@ Using Vault CLI:
 vault kv get secret/app/backend/database
 
 Using HTTP API (in your code):
-GET http://127.0.0.1:8200/v1/secret/data/app/backend/database
+GET http://10.10.166.53:8200/v1/secret/data/app/backend/database
 Header: X-Vault-Token: YOUR_TOKEN
 
 ### Step 5 - Code Example (Node.js)
 const vault = require('node-vault')({
   apiVersion: 'v1',
-  endpoint: 'http://127.0.0.1:8200'
+  endpoint: 'http://10.10.166.53:8200'
 });
 
 await vault.approleLogin({
@@ -57,7 +57,7 @@ console.log(secret.data.data.password);
 ### Step 6 - Code Example (Python)
 import hvac
 
-client = hvac.Client(url='http://127.0.0.1:8200')
+client = hvac.Client(url='http://10.10.166.53:8200')
 client.auth.approle.login(
   role_id='a1497870-3244-1df9-748a-419ccb8b9500',
   secret_id='YOUR_SECRET_ID'
@@ -102,8 +102,8 @@ After container restart unseal with 3 keys from vault-init.json:
   vault operator unseal KEY3
 
 ## For M4 (Monitoring)
-Prometheus metrics: http://127.0.0.1:8200/v1/sys/metrics?format=prometheus
-Vault health:       http://127.0.0.1:8200/v1/sys/health
+Prometheus metrics: http://10.10.166.53:8200/v1/sys/metrics?format=prometheus
+Vault health:       http://10.10.166.53:8200/v1/sys/health
 Audit log:          vault/logs/audit.log
 Role ID:            Ask M3 to generate when ready
 
