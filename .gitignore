@@ -1,5 +1,12 @@
-﻿vault/data/*
+vault/data/*
 vault/logs/*
 *.json
 .env
 *.token
+
+# Backend
+backend/data/
+__pycache__/
+*.pyc
+venv/
+.venv/
