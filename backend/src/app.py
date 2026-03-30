@@ -62,10 +62,12 @@ def create_app():
     # ── Root route (API info) ─────────────────────
     @app.route("/")
     def index():
+        mock = os.getenv("VAULT_MOCK_MODE", "true").lower() == "true"
         return {
             "service": "DevOps Security Backend",
             "version": "1.0.0",
             "status": "running",
+            "vault_mode": "MOCK (in-memory)" if mock else "REAL (HashiCorp Vault connected)",
             "endpoints": {
                 "auth": {
                     "POST /api/auth/login": "Login (returns JWT)",
