@@ -8,8 +8,8 @@ listener "tcp" {
   tls_disable = true
 }
 
-api_addr          = "http://127.0.0.1:8200"
-cluster_addr      = "http://127.0.0.1:8201"
+api_addr          = "http://10.10.166.53:8200"
+cluster_addr      = "http://10.10.166.53:8201"
 ui                = true
 default_lease_ttl = "1h"
 max_lease_ttl     = "24h"
