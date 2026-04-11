@@ -19,7 +19,7 @@ import {
   rejectRequest   as apiRejectRequest,
 } from '../api/index';
 
-const GRAFANA_URL = import.meta.env.VITE_GRAFANA_URL || 'http://localhost:3000';
+const GRAFANA_URL = import.meta.env.VITE_GRAFANA_URL || 'http://localhost:3000/public-dashboards/75eba3382100486c82476e47b777984e';
 
 export default function ManagerDashboard() {
   const { user, logout } = useAuth();

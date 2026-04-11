@@ -133,7 +133,8 @@ def upload_secret():
         return jsonify({"error": "name and value are required"}), 400
 
     # Build vault path
-    vault_path = f"app/secrets/{name.lower().replace(' ', '-')}"
+    #vault_path = f"app/secrets/{name.lower().replace(' ', '-')}"
+    vault_path = f"app/backend/{name.lower().replace(' ', '-')}"
 
     manager_id = get_jwt_identity()
 

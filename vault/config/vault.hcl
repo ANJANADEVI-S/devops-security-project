@@ -1,5 +1,5 @@
 storage "raft" {
-  path    = "C:/Users/ANJANA/devops-security-project/vault/data"
+  path    = "/vault/data"        # Linux path inside container
   node_id = "vault-node-1"
 }
 
@@ -12,12 +12,9 @@ telemetry {
   prometheus_retention_time = "30s"
   disable_hostname           = true
 }
-/*
-api_addr          = "http://10.10.166.53:8200"
-cluster_addr      = "http://10.10.166.53:8201"
-*/
-api_addr          = "http://127.0.0.1:8200"
-cluster_addr      = "http://127.0.0.1:8201"
+
+api_addr     = "http://vault:8200"    # Docker service name
+cluster_addr = "http://vault:8201"
 
 ui                = true
 default_lease_ttl = "1h"

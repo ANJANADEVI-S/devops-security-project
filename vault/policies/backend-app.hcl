@@ -1,14 +1,19 @@
-
 # Policy: backend-app
 # Who uses it: M2 backend service
-# Access: read secrets, get dynamic DB creds
 
+# Read AND write secrets (manager uploads via backend)
 path "secret/data/app/backend/*" {
-  capabilities = ["read"]
+  capabilities = ["create", "read", "update", "delete"]
 }
 
-path "database/creds/backend-role" {
-  capabilities = ["read"]
+# List and permanently delete (KV v2 needs this separate)
+path "secret/metadata/app/backend/*" {
+  capabilities = ["read", "list", "delete"]
+}
+
+# TTL deadline auto-revoke
+path "sys/leases/revoke" {
+  capabilities = ["update"]
 }
 
 path "auth/token/renew-self" {

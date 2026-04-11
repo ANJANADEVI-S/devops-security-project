@@ -6,7 +6,7 @@ secrets_revoked  = Counter('vault_secrets_revoked_total', 'Total secrets revoked
 active_users     = Gauge('vault_active_users', 'Distinct active users seen in audit log')
 requests_total   = Counter('vault_requests_total', 'Total Vault requests', ['operation', 'path'])
 
-LOG_PATH      = os.getenv('VAULT_AUDIT_LOG', 'C:/vault-exporter/audit.log')
+LOG_PATH      = os.getenv('VAULT_AUDIT_LOG', 'D:/DEVOPS/devops-security-project/vault/logs/audit.log')
 last_position = 0
 
 def parse_log():
@@ -71,8 +71,8 @@ def parse_log():
         print(f"Error parsing log: {e}")
 
 if __name__ == '__main__':
-    start_http_server(9100)
-    print(f"Exporter running → http://localhost:9100/metrics")
+    start_http_server(5000)
+    print(f"Exporter running → http://localhost:5000/metrics")
     print(f"Reading log from → {LOG_PATH}")
     while True:
         parse_log()

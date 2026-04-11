@@ -5,7 +5,7 @@ Flask Application Factory — assembles all components.
 import os
 import logging
 from datetime import timedelta
-from flask import Flask, Response
+from flask import Flask, Response, request as flask_request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
@@ -105,8 +105,8 @@ def create_app():
     def count_requests(response):
         try:
             HTTP_REQUESTS.labels(
-                method=response.__class__.__name__,  # will be overridden
-                endpoint=str(getattr(response, 'status_code', 0)),
+                method=flask_request.method,
+                endpoint=flask_request.path,
                 status=str(response.status_code),
             ).inc()
         except Exception:
