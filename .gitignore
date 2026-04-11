@@ -1,6 +1,8 @@
 vault/data/*
 vault/logs/*
-*.json
+# Ignore vault token files only, not package.json etc.
+vault/**/*.json
+*.token.json
 .env
 *.token
 
