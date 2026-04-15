@@ -1,0 +1,287 @@
+Organizaton name : 
+https://dev.azure.com/anjanadevigsn/ 
+Repository : 
+https://anjanadevigsn@dev.azure.com/anjanadevigsn/DEVOP/_git/DEVOP 
+
+Azure pipelines 1.yml
+	trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'              # 👈 change if pom.xml is inside a subfolder
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+
+Azure pipeline two
+	trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+# --- Build Stage ---
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Job'
+    steps:
+    - script: |
+        echo "Restoring project dependencies..."
+      displayName: 'Restore dependencies'
+    - script: |
+        echo "Running unit tests..."
+      displayName: 'Run unit tests'
+
+# --- Test Stage ---
+- stage: Test
+  displayName: 'Test Stage'
+  dependsOn: Build       # ensures Test runs only if Build succeeds
+  condition: succeeded() # optional, explicitly enforces the rule
+  jobs:
+  - job: TestJob
+    displayName: 'Run Tests and Publish Results'
+    steps:
+    - script: |
+        echo "Running integration tests..."
+        mkdir -p test-results
+        echo "All tests passed!" > test-results/results.txt
+      displayName: 'Execute Tests'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/test-results/*.xml'
+        testRunTitle: 'Publish Test Results'
+      displayName: 'Publish Test Results to Azure DevOps'
+
+Pre Requisites : 
+1. Java SDK - 17 or 21. 
+2. Jenkins LTS version. 
+Link: https://www.jenkins.io/download/thank-you-downloading-windows-installer/ 
+
+Lab 5 : 
+
+http://localhost:8080
+
+Script :  
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ANJANADEVI-S/Streamlit_Calculator_App.git'
+            }
+        stage('Setup Python & Install Dependencies') {
+            steps {
+                bat '''
+                python -m venv venv
+                call venv\\Scripts\\activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                ''}}
+        stage('Run Streamlit App') {
+            steps {
+                bat '''
+                call venv\\Scripts\\activate
+                streamlit run app.py --server.headless true
+                '''}}
+    }
+
+ import streamlit as st
+
+st.title("Simple Calculator")
+
+num1 = st.number_input("Enter first number")
+num2 = st.number_input("Enter second number")
+operation = st.selectbox("Choose operation", ["Add", "Subtract", "Multiply", "Divide"])
+
+if st.button("Calculate"):
+    if operation == "Add":
+        st.success(f"Result: {num1 + num2}")
+    elif operation == "Subtract":
+        st.success(f"Result: {num1 - num2}")
+    elif operation == "Multiply":
+        st.success(f"Result: {num1 * num2}")
+    elif operation == "Divide":
+        st.success(f"Result: {num1 / num2 if num2 != 0 else 'Error: Divide by zero'}")
+
+1. Install Java JDK and check its version. 
+2. Download the binary-only ZIP file from releases to install gradle and
+Mkdir dir1
+ run gradle init 3. Build and run the gradle application. 
+Dir for java code : app/src/main/java/org/example/App.java
+
+
+Ansible
+# Update system
+sudo apt update
+
+# Install Ansible
+sudo apt install ansible -y
+
+# Install SSH
+sudo apt install openssh-client openssh-server -y
+
+# Start and enable SSH
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+# Check IP address
+ifconfig
+
+# Test connection to server
+ping 10.10.17.4
+
+# Generate SSH key
+ssh-keygen
+
+# Copy SSH key to server
+ssh-copy-id Akshara@10.10.17.4
+
+# Test SSH login
+ssh Akshara@10.10.17.4
+# Update system
+sudo apt update
+
+# Install SSH
+sudo apt install openssh-server -y
+
+# Start and enable SSH
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+# Check IP address
+ifconfig
+[webservers]
+10.10.17.4 ansible_user=Akshara ansible_ssh_private_key_file=~/.ssh/id_rsa
+---
+- name: Install and Start Nginx Web Server
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start Nginx service
+      service:
+        name: nginx
+        state: started
+
+    - name: Enable Nginx at boot
+      service:
+        name: nginx
+        enabled: yes
+
+    - name: Deploy simple web page
+      copy:
+        content: "<h1>Welcome to Ansible Web Server</h1>"
+        dest: /var/www/html/index.html
+ansible-playbook -i inventory.ini webserver.yml --ask-become-pass
+# Login to server
+ssh Akshara@10.10.17.4
+
+# Check nginx
+nginx -v
+http://10.10.17.4
+
+Ex.8
+
+# Update system
+sudo apt update
+
+# Install Ansible
+sudo apt install ansible -y
+
+# Install SSH
+sudo apt install openssh-client openssh-server -y
+
+# Start SSH
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+# Check IP
+ifconfig
+
+# Test connection
+ping 10.10.17.4
+
+# Generate SSH key
+ssh-keygen
+
+# Copy SSH key to managed node
+ssh-copy-id Akshara@10.10.17.4
+
+# Test SSH login
+ssh Akshara@10.10.17.4
+
+# Update system
+sudo apt update
+
+# Install SSH
+sudo apt install openssh-server -y
+
+# Start SSH
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+# Check IP
+ifconfig
+
+nano inventory.ini
+[webservers]
+10.10.17.4 ansible_user=Akshara ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible all -i inventory.ini -m ping
+nano my_web_role/tasks/main.yml
+
+---
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+- name: Ensure Apache is running
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+nano site.yml
+
+---
+- name: Configure Web Server
+  hosts: webservers
+  become: true
+
+  roles:
+    - my_web_role
+
+ansible-playbook -i inventory.ini site.yml -K
+
+# Login to managed node
+ssh Akshara@10.10.17.4
+
+# Check Apache installation
+apache2 -v
+
+http://10.10.17.4
+
