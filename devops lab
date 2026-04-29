@@ -287,3 +287,95 @@ cd ..
 sudo systemctl status apache2
 apache2 -v
 
+
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'JDK17'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                url: 'https://github.com/user/sample-java-project.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI Pipeline Success'
+        }
+
+        failure {
+            echo 'CI Pipeline Failed'
+        }
+    }
+}
+
+
+sample-java-project/
+ ├── pom.xml
+ ├── src/
+ │   ├── main/
+ │   │   └── java/
+ │   │       └── App.java
+ │   └── test/
+ │       └── java/
+ │           └── AppTest.java
+ └── README.md
+
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.demo</groupId>
+  <artifactId>sample-java-project</artifactId>
+  <version>1.0</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello Jenkins CI/CD");
+    }
+}
+
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+public class AppTest {
+    @Test
+    public void testApp() {
+        assertTrue(true);
+    }
+}
