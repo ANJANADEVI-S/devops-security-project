@@ -205,132 +205,57 @@ public class App {
 }
 
 Ansible
-# Update system
 sudo apt update
-
-# Install Ansible
 sudo apt install ansible -y
-
-# Install SSH
-sudo apt install openssh-client openssh-server -y
-
-# Start and enable SSH
+sudo apt install openssh-client -y
 sudo systemctl start ssh
-sudo systemctl enable ssh
-
-# Check IP address
-ifconfig
-
-# Test connection to server
-ping 10.10.17.4
-
-# Generate SSH key
+ping <ip>   #ctrl+c
 ssh-keygen
+ssh-copy-id ubuntuname@<ip>
+nano inventory.ini
 
-# Copy SSH key to server
-ssh-copy-id Akshara@10.10.17.4
-
-# Test SSH login
-ssh Akshara@10.10.17.4
-# Update system
-sudo apt update
-
-# Install SSH
-sudo apt install openssh-server -y
-
-# Start and enable SSH
-sudo systemctl start ssh
-sudo systemctl enable ssh
-
-# Check IP address
-ifconfig
 [webservers]
-10.10.17.4 ansible_user=Akshara ansible_ssh_private_key_file=~/.ssh/id_rsa
+<ip> ansible_user=ubuntuname ansible_ssh_private_key_file=~/keyrsa    #ctrl+o enter ctrl+x
+
+cd ~/ansible-setup
+nano webserver.yml
+
 ---
-- name: Install and Start Nginx Web Server
+- name: Install Nginx Web Server
   hosts: webservers
   become: yes
 
   tasks:
-    - name: Update apt packages
-      apt:
-        update_cache: yes
-
-    - name: Install Nginx
+    - name: Install nginx
       apt:
         name: nginx
         state: present
+        update_cache: yes
 
-    - name: Start Nginx service
-      service:
-        name: nginx
-        state: started
-
-    - name: Enable Nginx at boot
-      service:
-        name: nginx
-        enabled: yes
-
-    - name: Deploy simple web page
-      copy:
-        content: "<h1>Welcome to Ansible Web Server</h1>"
-        dest: /var/www/html/index.html
-ansible-playbook -i inventory.ini webserver.yml --ask-become-pass
-# Login to server
-ssh Akshara@10.10.17.4
-
-# Check nginx
+ansible-playbook -i inventory.ini webserver.yml -K
+ssh ubuntuname@<ip>
+#systemctl status nginx
 nginx -v
-http://10.10.17.4
 
 Ex.8
 
-# Update system
+#Install ansible
 sudo apt update
-
-# Install Ansible
 sudo apt install ansible -y
-
-# Install SSH
-sudo apt install openssh-client openssh-server -y
-
-# Start SSH
-sudo systemctl start ssh
-sudo systemctl enable ssh
-
-# Check IP
-ifconfig
-
-# Test connection
-ping 10.10.17.4
-
-# Generate SSH key
-ssh-keygen
-
-# Copy SSH key to managed node
-ssh-copy-id Akshara@10.10.17.4
-
-# Test SSH login
-ssh Akshara@10.10.17.4
-
-# Update system
-sudo apt update
-
-# Install SSH
-sudo apt install openssh-server -y
-
-# Start SSH
-sudo systemctl start ssh
-sudo systemctl enable ssh
-
-# Check IP
-ifconfig
-
+ansible --version
+ssh-keygen -t rsa
+ssh-copy-id -i keyrsa ubuntuname@<ip>     #ifconfig
+mkdir -p ~/ansible-setup
+cd ~/ansible-setup
 nano inventory.ini
+
 [webservers]
-10.10.17.4 ansible_user=Akshara ansible_ssh_private_key_file=~/.ssh/id_rsa
+<ip> ansible_user=ubuntuname ansible_ssh_private_key_file=~/keyrsa    #ctrl+o enter ctrl+x
+
 ansible all -i inventory.ini -m ping
-nano my_web_role/tasks/main.yml
+ansible-galaxy init my_web_role
+cd my_web_role/tasks
+nano main.yml
 
 ---
 - name: Install Apache
@@ -345,23 +270,20 @@ nano my_web_role/tasks/main.yml
     state: started
     enabled: yes
 
+cd ..
+cd..
 nano site.yml
 
 ---
-- name: Configure Web Server
+- name: Configure web server
   hosts: webservers
-  become: true
+  become: true  # for using sudo
 
   roles:
     - my_web_role
 
-ansible-playbook -i inventory.ini site.yml -K
-
-# Login to managed node
-ssh Akshara@10.10.17.4
-
-# Check Apache installation
+ansible-playbook -i inventory.ini site.yml -K 
+cd ..
+sudo systemctl status apache2
 apache2 -v
-
-http://10.10.17.4
 
